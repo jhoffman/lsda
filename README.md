@@ -1,2 +1,2 @@
-rcnn-10k
+Large Scale Detection through Adaptation
 ========
