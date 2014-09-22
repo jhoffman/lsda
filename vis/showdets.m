@@ -51,6 +51,7 @@ set(h, 'Color', 'white');
 
 if ~isempty(boxes)
   numfilters = size(boxes,1);%floor(size(boxes, 2)/4);
+  %{
   if toprint
     % if printing, increase the contrast around the boxes
     % by printing a white box under each color box
@@ -73,6 +74,7 @@ if ~isempty(boxes)
       c='w';
       line([x1 x1 x2 x2 x1]', [y1 y2 y2 y1 y1]', 'color', c, 'linewidth', w);   
     end
+  %}
   end
   
   % draw the boxes with the detection window on top (reverse order)
@@ -99,9 +101,10 @@ if ~isempty(boxes)
     text(double(x1-5),double(y2+5),sprintf('%s: %2.1f', ss{1}, boxes(i,5)),...
         'BackgroundColor', [0.7 0.9 0.7], 'FontSize', 12);
   end
-end
+%end
 
 % save to pdf
+
 if toprint
   % requires export_fig from http://www.mathworks.com/matlabcentral/fileexchange/23629-exportfig
   %export_fig([out]);
