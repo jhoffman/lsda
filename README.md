@@ -14,8 +14,8 @@ Download pre-trained 7.5K model:
 
 To try out an example, run:
     
-    load data/rcnn_models/rcnn_model7200.mat;
-    detect10k_demo(rcnn_model, 'ex_img.jpg');
+    startup;
+    detect10k_demo(rcnn_model, rcnn_feat, 'ex_img.jpg');
 
 Dependency
 -------
