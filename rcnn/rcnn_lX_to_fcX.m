@@ -1,7 +1,8 @@
 function feat = rcnn_lX_to_fcX(feat, precomp_layer, layer, rcnn_model)
 % feat = rcnn_lX_to_fcX(feat, layer, rcnn_model)
-%   On-the-fly conversion of pool5 features to fc6 or fc7
-%   using the weights and biases stored in rcnn_model.cnn.layers.
+%   On-the-fly conversion of some layer (5 or higher) features to a final
+%   fully connected layer using the weights and biases stored in 
+%   rcnn_model.cnn.layers.
 
 % AUTORIGHTS
 % ---------------------------------------------------------
