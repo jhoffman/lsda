@@ -1,4 +1,4 @@
-function detect10k_demo(rcnn_model, imname, outname)
+function detect10k_demo(rcnn_model, rcnn_feat, imname, outname)
 th = tic;
 % Read image
 im = imread(imname);
@@ -8,8 +8,9 @@ numbox = 256*4;
 boxes = extract_boxes(im, numbox);
 
 % Extract per region features and scores
-feat = per_region_features(rcnn_model, im, boxes);
-scores = bsxfun(@plus, feat*rcnn_model.detectors.W, rcnn_model.detectors.B);
+scores = per_region_features(rcnn_model, rcnn_feat, im, boxes);
+%scores = feat * rcnn_model.detectors.W;
+%scores = bsxfun(@plus, feat*rcnn_model.detectors.W, rcnn_model.detectors.B);
 
 % Prune the boxes based on scoresegprs
 [top_boxes, cats_ids, ~] = prune_boxes(boxes, scores);
@@ -26,13 +27,20 @@ end
 end
 
 function [top_boxes, cats_ids, top_scores] = prune_boxes(boxes, scores)
-
+max_numcat = 100;
 th = tic;
 fprintf('Prune boxes...');
 
 % find scores > 0
 [ind_c, c] = find(scores > 0);
 nz_classes = unique(c);
+if length(nz_classes) > max_numcat
+    % subsample classes with top max_numcat scores
+    t = max(scores(:, nz_classes));
+    [~, ord] = sort(t, 'descend');
+    nz_classes = nz_classes(ord(1:max_numcat));
+end
+
 top_boxes = zeros(50,5); % preallocate some space
 cats_ids = zeros(50,1);
 top_scores = zeros(50, size(scores,2));
@@ -59,8 +67,8 @@ keep = nms(top_boxes,0.4);
 cats_ids = cats_ids(keep);
 top_boxes = top_boxes(keep,:);
 top_scores = top_scores(keep,:);
-%2acefhjlpstx
 ind = find(top_boxes(:,5) >= 1.0);
+%
 if length(ind) >= 2
     top_boxes = top_boxes(ind,:);
     cats_ids = cats_ids(ind);
@@ -79,6 +87,8 @@ boxes = selective_search_boxes(im, fast_mode, im_width);
 boxes = boxes(:, [2 1 4 3]); %[y1 x1 y2 x2] to [x1 y1 x2 y2]
 % Subsample boxes through clustering, followed by random sample
 numbox = min(numbox, size(boxes,1));
+boxes = boxes(1:numbox,:);
+%{
 [ind,~,~] = kmeans(boxes, numbox, 'EmptyAction', 'drop', ...
     'Distance', 'cityblock');
 ss_boxes = boxes;
@@ -94,22 +104,18 @@ for i = 1:numbox
         end
     end
 end
+%}
 boxes = single(boxes);
 fprintf(' found %d boxes: done (in %.3fs)\n', size(boxes, 1), toc(th));
 end
 
-function feat = per_region_features(rcnn_model, im, boxes)
+function feat = per_region_features(rcnn_model, rcnn_feat, im, boxes)
 fprintf('Extracting CNN features from regions...');
 th = tic();
-% HACK: compute to pool5 only and then do the rest on the fly
-rcnn_pool5 = rcnn_model;
-rcnn_pool5.training_opts.layer = 5;
-rcnn_pool5.cnn.definition_file ='model-defs/imagenet_rcnn_batch_256_output_pool5.prototxt';
-rcnn_pool5 = rcnn_load_model(rcnn_pool5);
 tt = tic;
-feat = rcnn_features(im, boxes, rcnn_pool5);
+feat = rcnn_features(im, boxes, rcnn_feat);
 fprintf('ft comp in %.3f\n', toc(tt));
-feat = rcnn_pool5_to_fcX(feat, 8, rcnn_model);
+feat = rcnn_lX_to_fcX(feat, length(rcnn_feat.cnn.layers), 8, rcnn_model);
 ft_norm = rcnn_model.training_opts.feat_norm_mean;
 feat = rcnn_scale_features(feat, ft_norm);
 fprintf('done (in %.3fs).\n', toc(th));

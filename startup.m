@@ -19,4 +19,30 @@ if exist('external/caffe/matlab/caffe','dir')
 else
   warning('Please install Caffe in ./external/caffe');
 end
+fprintf('Setting up caffe and loading models...');
+model_loc = 'data/rcnn_models/rcnn_model7200.mat';
+if exist(model_loc, 'file')
+    load(model_loc);
+else
+    fprintf('Warning: you need the LSDA model to run the demo.\n');
+    fprintf('Press any key to download it (stores in data/rcnn_models/rcnn_model7200.mat)');
+    pause;
+    system('./fetch_lsda7k_model.sh');
+end
+
+fprintf(' Done.\n');
+fprintf('Preparing models for detection use...');
+% pre-multiply the detector weights by the final layer of caffe.
+rcnn_model.cnn.layers(end).weights{1} = rcnn_model.cnn.layers(end).weights{1} * rcnn_model.detectors.W;
+rcnn_model.cnn.layers(end).weights{2} = rcnn_model.detectors.W' * rcnn_model.cnn.layers(end).weights{2};
+rcnn_feat = rcnn_model;
+rcnn_feat.training_opts.layer = 7;
+if rcnn_feat.training_opts.layer == 5
+    rcnn_feat.cnn.definition_file ='model-defs/imagenet_rcnn_batch_256_output_pool5.prototxt';
+else
+    rcnn_feat.cnn.definition_file ='model-defs/imagenet_rcnn_batch_256_output_fc7.prototxt';
+end
+rcnn_feat = rcnn_load_model(rcnn_feat);
+fprintf(' Done.\n');
+
 fprintf('LSDA startup done\n');
