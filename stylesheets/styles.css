@@ -252,6 +252,11 @@ a.header {
 	text-decoration: underline;
 }
 
+pre {
+	white-space: pre-wrap;	
+}
+}
+
 a.name {
 	white-space: nowrap;
 }
