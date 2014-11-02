@@ -24,8 +24,8 @@ else
   rcnn_model = rcnn_model_or_file;
 end
 
-assert(exist(rcnn_model.cnn.binary_file, 'file'), 'Missing cnn binary file: please run data/fetch_lsda7k_model.sh');
-assert(exist(rcnn_model.cnn.definition_file, 'file'), 'Missing definition file -- update repo');
+assert(exist(rcnn_model.cnn.binary_file, 'file')>0, 'Missing cnn binary file: please run data/fetch_lsda7k_model.sh');
+assert(exist(rcnn_model.cnn.definition_file, 'file')>0, 'Missing definition file -- update repo');
 
 rcnn_model.cnn.init_key = ...
     caffe('init', rcnn_model.cnn.definition_file, rcnn_model.cnn.binary_file);
