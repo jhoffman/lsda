@@ -51,31 +51,6 @@ set(h, 'Color', 'white');
 
 if ~isempty(boxes)
   numfilters = size(boxes,1);%floor(size(boxes, 2)/4);
-  %{
-  if toprint
-    % if printing, increase the contrast around the boxes
-    % by printing a white box under each color box
-    for i = numfilters:-1:1
-      x1 = boxes(i,1);%boxes(:,1+(i-1)*4);
-      y1 = boxes(i,2);%boxes(:,2+(i-1)*4);
-      x2 = boxes(i,3);%boxes(:,3+(i-1)*4);
-      y2 = boxes(i,4);%boxes(:,4+(i-1)*4);
-      % remove unused filters
-      del = find(((x1 == 0) .* (x2 == 0) .* (y1 == 0) .* (y2 == 0)) == 1);
-      x1(del) = [];
-      x2(del) = [];
-      y1(del) = [];
-      y2(del) = [];
-      if i == 1
-        w = wwidth;
-      else
-        w = wwidth;
-      end
-      c='w';
-      line([x1 x1 x2 x2 x1]', [y1 y2 y2 y1 y1]', 'color', c, 'linewidth', w);   
-    end
-  %}
-  end
   
   % draw the boxes with the detection window on top (reverse order)
   for i = numfilters:-1:1
@@ -98,17 +73,12 @@ if ~isempty(boxes)
     end
     line([x1 x1 x2 x2 x1]', [y1 y2 y2 y1 y1]', 'color', c, 'linewidth', cwidth, 'linestyle', s);
     ss = regexp(names{i}, ',', 'split');
-    text(double(x1-5),double(y2+5),sprintf('%s: %2.1f', ss{1}, boxes(i,5)),...
-        'BackgroundColor', [0.7 0.9 0.7], 'FontSize', 12);
+    x_t = double(max(5, x1-5)); y_t = double(min(y2+5, size(im, 1)-15));
+    text(x_t,y_t,sprintf('%s: %2.1f', ss{1}, boxes(i,5)),...
+        'BackgroundColor', [0.7 0.9 0.7], 'FontSize', 20, 'Color', c);
   end
-%end
-
-% save to pdf
+end
 
 if toprint
-  % requires export_fig from http://www.mathworks.com/matlabcentral/fileexchange/23629-exportfig
-  %export_fig([out]);
-  %saveas(h, out);
-  im_new = frame2im(getframe(h));
-  imwrite(im_new, out);
+  saveas(h, out);
 end
