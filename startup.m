@@ -21,14 +21,19 @@ else
 end
 fprintf('Setting up caffe and loading models...');
 model_loc = 'data/rcnn_models/rcnn_model7200.mat';
-if exist(model_loc, 'file')
-    load(model_loc);
-else
+if ~exist(model_loc, 'file') || ~exist('data/caffe_nets/finetune_ilsvrc13_val1+train1k_iter_50000')
     fprintf('Warning: you need the LSDA model to run the demo.\n');
     fprintf('Press any key to download it (stores in data/rcnn_models/rcnn_model7200.mat)');
     pause;
-    system('./fetch_lsda7k_model.sh');
+    if ~exist('data/rcnn_models', 'dir')
+        mkdir('data/rcnn_models');
+    end
+    if ~exist('data/caffe_nets', 'dir')
+        mkdir('data/caffe_nets');
+    end
+    system('./data/fetch_lsda7k_model.sh');
 end
+load(model_loc);
 
 fprintf(' Done.\n');
 fprintf('Preparing models for detection use...');
