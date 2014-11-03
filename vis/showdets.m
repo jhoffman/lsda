@@ -80,5 +80,6 @@ if ~isempty(boxes)
 end
 
 if toprint
+  set(gca, 'LooseInset', get(gca, 'TightInset'));
   saveas(h, out);
 end
