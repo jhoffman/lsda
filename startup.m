@@ -38,8 +38,10 @@ load(model_loc);
 fprintf(' Done.\n');
 fprintf('Preparing models for detection use...');
 % pre-multiply the detector weights by the final layer of caffe.
-rcnn_model.cnn.layers(end).weights{1} = rcnn_model.cnn.layers(end).weights{1} * rcnn_model.detectors.W;
-rcnn_model.cnn.layers(end).weights{2} = rcnn_model.detectors.W' * rcnn_model.cnn.layers(end).weights{2};
+if size(rcnn_model.cnn.layers(end).weights{1},2) == size(rcnn_model.detectors.W,1)
+  rcnn_model.cnn.layers(end).weights{1} = rcnn_model.cnn.layers(end).weights{1} * rcnn_model.detectors.W;
+  rcnn_model.cnn.layers(end).weights{2} = rcnn_model.detectors.W' * rcnn_model.cnn.layers(end).weights{2};
+end
 rcnn_feat = rcnn_model;
 rcnn_feat.training_opts.layer = 7;
 if rcnn_feat.training_opts.layer == 5
