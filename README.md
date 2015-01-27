@@ -28,7 +28,7 @@ Citing
 -------
 
     "LSDA: Large Scale Detection Through Adaptation." J. Hoffman, 
-    S. Guadarrama, E. Tzeng, J. Donahue, R. Girshick, T. Darrell, and
-    K. Saenko. arXiv:1407.5035
+    S. Guadarrama, E. Tzeng, R. Hu, J. Donahue, R. Girshick, T. Darrell, and
+    K. Saenko. Neural Information Processing Systems (NIPS), 2014.
 
 http://arxiv.org/abs/1407.5035
