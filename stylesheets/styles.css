@@ -151,19 +151,27 @@ img {
 
 p img {
   display: inline;
-  margin: 0;
+  /* margin: 0;*/
+  margin-left: auto;
+  margin-right: auto;
+  width: 6em
   padding: 0;
   vertical-align: middle;
   text-align: center;
   border: none;
 }
 
+img.displayed {
+  display: block;
+  margin-left: auto;
+  margin-right: auto 
+}
 /* Code blocks */
 
 code, pre {
 	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   color:#000;
-  font-size:14px;
+  font-size:12px;
 }
 
 pre {
